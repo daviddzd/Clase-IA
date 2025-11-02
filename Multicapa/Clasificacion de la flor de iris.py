@@ -1,5 +1,13 @@
+"""Este programa crea y entrena una red neuronal multicapa para clasificar la flor de iris
+los módulos utilizados son:
+- numpy: para operaciones numéricas.
+- pandas: para manipulación y análisis de datos.
+- tensorflow y keras: para construir y entrenar la red neuronal.
+- matplotlib: para visualización de datos."""
+
 import matplotlib.pyplot as plt
 
+# Primero cargamos el conjunto de datos de iris
 from sklearn.datasets import load_iris
 iris = load_iris()
 
@@ -7,11 +15,13 @@ print(iris.keys())
 
 print(iris.DESCR)
 
+# Algunas de las llaves importantes son:
 iris.target_names
 iris.target
 iris.data
 iris.feature_names
 
+# Creamos un dataframe con pandas para una mejor manipulación de los datos
 import pandas as pd
 
 iris_df = pd.DataFrame(data=iris['data'], columns=iris['feature_names'])
@@ -19,9 +29,11 @@ iris_df
 
 iris_df.describe()
 
+# Definimos X e y
 X = iris_df
 y = pd.get_dummies(iris.target).values
 
+# Separamos los datos en conjuntos de entrenamiento y prueba
 from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -38,6 +50,7 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
+# Definimos nuestra red neuronal multicapa
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
@@ -47,6 +60,7 @@ modelo = Sequential([
     Dense(3, activation='softmax'), 
 ])
 
+# Creamos el optimizador Adam con una tasa de aprendizaje personalizada
 from tensorflow.keras.optimizers import Adam
 
 # Tasa de aprendizaje deseada
@@ -59,12 +73,14 @@ modelo.compile(
     metrics=['accuracy']
 )
 
+# Entrenamos el modelo
 history = modelo.fit(
     X_train, y_train,
     epochs=10, batch_size=1,
     validation_data=(X_test, y_test)
 )
 
+# Graficamos la función de pérdida
 import matplotlib.pyplot as plt
 
 plt.plot(history.history['loss'], label='Pérdida de entrenamiento')
@@ -75,11 +91,13 @@ plt.legend()
 plt.title('Función de pérdida durante el entrenamiento')
 plt.show()
 
+# Evaluamos el modelo en el conjunto de prueba
 loss, accuracy = modelo.evaluate(X_test, y_test)
 print(f'Loss: {loss}, Accuracy: {accuracy}')
 
 import numpy as np
 
+# Hacemos predicciones y comparamos con los valores reales
 predictions = modelo.predict(X_test)
 # Obtener el índice de la clase predicha para cada punto de datos
 predicted_classes = np.argmax(predictions, axis=1)
@@ -94,6 +112,7 @@ comparison['Predicted Flower'] = [iris.target_names[i] for i in predicted_classe
 comparison = comparison[['Actual Class Index', 'Actual Flower', 'Predicted Class Index', 'Predicted Flower']]
 print(comparison.head())
 
+# Calculamos la matriz de confusión y la sensibilidad
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, recall_score
 
 y_pred = modelo.predict(X_test)

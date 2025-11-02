@@ -1,3 +1,10 @@
+"""Este programa crea y entrena una red neuronal multicapa para clasificar candidatos a un empleo
+los módulos utilizados son:
+- numpy: para operaciones numéricas.
+- pandas: para manipulación y análisis de datos.
+- tensorflow y keras: para construir y entrenar la red neuronal.
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -29,6 +36,7 @@ y = (prom_total > 75).astype(int)
 # one-hot encoding
 y = pd.get_dummies(y).values 
 
+# División de datos en entrenamiento y prueba
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(
     df, y, test_size=0.2, random_state=42
@@ -40,6 +48,7 @@ scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
+# Definición de nuestra red neuronal multicapa
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
@@ -53,6 +62,7 @@ modelo = Sequential([
 adam = Adam(learning_rate=0.001)
 modelo.compile(optimizer=adam, loss='categorical_crossentropy', metrics=['accuracy'])
 
+# Entrenamiento del modelo
 history = modelo.fit(
     X_train, y_train,
     epochs=50,
@@ -61,6 +71,7 @@ history = modelo.fit(
     verbose=1
 )
 
+# Graficamos la función de pérdida
 import matplotlib.pyplot as plt
 
 plt.plot(history.history['loss'], label='Pérdida de entrenamiento')
@@ -74,6 +85,7 @@ plt.show()
 loss, acc = modelo.evaluate(X_test, y_test)
 print(f"\n🔹 Loss: {loss:.4f}  |  Accuracy: {acc:.4f}")
 
+# Matriz de confusión y sensibilidad
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, recall_score
 
 pred = modelo.predict(X_test)
@@ -90,6 +102,7 @@ print("\nSensitivity (Recall) por clase:")
 print(f"No Apto: {sensitivity[0]:.2f}")
 print(f"Apto: {sensitivity[1]:.2f}")
 
+# Evaluación de un nuevo candidato 
 nuevo_candidato = np.array([[90, 88, 85, 87, 84, 89,   # técnicas
                              82, 86, 85, 83, 87, 80,   # matemáticas
                              70, 75, 80, 72, 78, 74]]) # psicológicas
