@@ -1,13 +1,13 @@
 """
-el codigo muestra una red convolucional
-los modulos necesarios son
-
+el codigo muestra una red convolucional(CNN) para clasificar dígitos escritos a mano en el conjunto de datos MNIST
 """
 
+# primero cargamos el conjunto de datos 
 from sklearn.datasets import load_digits
 
 digits = load_digits()
 
+# vemos las llaves del diccionario
 digits.keys()
 
 dict_keys([
@@ -16,8 +16,10 @@ dict_keys([
     'DESCR'
 ])
 
+# descripcion del conjunto de datos
 print(digits.DESCR)
 
+# visualizar una imagen de ejemplo del conjunto de datos
 index = 0
 
 image = digits.images[index]
@@ -25,13 +27,14 @@ label = digits.target[index]
 
 print(image)
 
+# Visualizar la imagen usando matplotlib
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(3, 3))
 plt.imshow(image, cmap=plt.cm.gray)
 plt.title(f'Dígito: {label}')
 plt.show()
-
+# vemos las dimensiones del conjunto de datos
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
@@ -41,10 +44,11 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size=0.2, random_state=42
 )
 
-# One-hot encode the target variable
+# Convertir las etiquetas a formato one-hot encoding3
 y_train = to_categorical(y_train, num_classes=10)
 y_test = to_categorical(y_test, num_classes=10)
 
+# Ver las nuevas formas de los datos
 print(X_train.shape)
 print(X_test.shape)
 
@@ -101,6 +105,7 @@ history = model.fit(
     validation_split=0.2
 )
 
+# Visualizar la función de pérdida durante el entrenamiento
 import matplotlib.pyplot as plt
 
 plt.plot(history.history['loss'], label='Pérdida de entrenamiento')
@@ -111,6 +116,7 @@ plt.legend()
 plt.title('Función de pérdida durante el entrenamiento')
 plt.show()
 
+# Evaluar el modelo en el conjunto de prueba
 loss, accuracy = model.evaluate(X_test, y_test)
 print(f'Loss: {loss}, Accuracy: {accuracy}')
 
